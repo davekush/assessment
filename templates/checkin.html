@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <title>MTSS Monitoring</title>
+    </head>
+    <body>
+        <!-- Header -->
+		<div class="header">
+            <header>
+                <div class="header_left">
+                    <div class="headerimg"><img src="/static/img/Viking Analytics.png" alt="HF Logo" class="logo"></div>
+                    <h1 id="headertitle">MTSS Management System</h1>
+                </div>
+                <div class="header_right">
+                    {% if session.username   %}
+                        {{session['username'] }} 
+                        <a href="/mtss/logout"><button class="button" id="logout">Logout</button></a>
+                    {%  endif  %}
+                </div>
+            </header>	            
+        </div>
+        <!-- Flash Messages -->
+        <div class="flash">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}     
+                    {% for message in messages %}
+                        <p>{{message}}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}	
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3>Update {{ intervention.treatment.treatment_name }} for {{intervention.student.FIRST_NAME}} {{intervention.student.FIRST_NAME}}</h3>
+                    <p class="directions">Please enter comments and next check-in date below.  A default of 2 weeks from today has been set.</p>
+                    <form action="/mtss/checkin", method='POST'>
+                        <label for="nextcheck">Next Check-In Date</label>
+                        <input type="date" value="{{date}}" name="nextcheck">
+                        <label for="comment">Comment</label>
+                        <textarea name="comment" cols="50" rows="3"></textarea>
+                        <input type="submit" class="button" name="submit" value="Check-in">
+                        <input type="submit" class="button" name="submit" value = "Cancel">
+                        <input type="hidden" value="{{intervention.id}}", name="int_id">
+                    </form>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3>Details for {{intervention.student.FIRST_NAME}} in {{intervention.treatment.treatment_name}}</h3>
+                    <h5 class="datalabel"> Start Date: <span class="data">{{startdate}}</span></h5>
+                    <h5 class="datalabel">Supervising SST Member: <span class="data">{{intervention.supervisor.teacher.LASTFIRST}}</span></h5>
+                    <h5 class="datalabel">Check-In History for This Intervention</h5>
+                    {% if checks[0] %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                {%  for check in checks   %}
+                                <tr><td>{{ check.created_at.strftime('%m/%d/%Y')}}</td><td>{{check.checkcom.comment}}</td></tr>
+                                {%   endfor   %}
+                
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <h6 class="nocheck">There are no check-ins for this intervention so far.</h6>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">                
+                    <h3>Other Interventions for {{intervention.student.FIRST_NAME}}</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Intervention</th>
+                                <th>SST Supervisor</th>
+                                <th>Start Date</th>
+                                <th>Next Check-in</th>
+                                <th>Concern</th>
+                                <th>Outcome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%  for int in otherints  %}
+                                <tr>
+                                    <td>{{int.treatment.treatment_name}}</td>
+                                    <td>{{int.supervisor.teacher.LASTFIRST}}</td>
+                                    <td>{{intervention.startdate[5:7]}}/{{intervention.startdate[8:10]}}/{{intervention.startdate[0:4]}}</td>
+                                    <td>
+                                        {% if int.status == 0 %}
+                                         {{int.checkin[5:7]}}/{{int.checkin[8:10]}}/{{int.checkin[0:4]}}
+                                        {% else %}
+                                            Ended
+                                        {%  endif  %}
+                                    </td>
+                                    <td>{{int.concern.concern_name}}</td>
+                                    <td>
+                                        {% if int.status == 0 %}
+                                            Ongoing
+                                        {% else %}
+                                            {{  int.outcome.outcome_name  }}
+                                        {%  endif  %}
+                                    </td>
+                                </tr>
+                            {%  endfor  %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

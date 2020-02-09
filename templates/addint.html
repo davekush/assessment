@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <title>MTSS Monitoring</title>
+    </head>
+    <body>
+        <!-- Header -->
+		<div class="header">
+            <header>
+                <div class="header_left">
+                    <div class="headerimg"><img src="/static/img/Viking Analytics.png" alt="HF Logo" class="logo"></div>
+                    <h1 id="headertitle">MTSS Management System</h1>
+                </div>
+                <div class="header_right">
+                    {% if session.username   %}
+                        {{session['username'] }} 
+                        <a href="/mtss/logout"><button class="button" id="logout">Logout</button></a>
+                    {%  endif  %}
+                </div>
+            </header>	            
+        </div>
+        <!-- Flash Messages -->
+        <div class="flash">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}     
+                    {% for message in messages %}
+                        <p>{{message}}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}	
+        </div>
+
+        <!-- MAIN CONTENT -->
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12, col-md-9, col-lg-6">
+                    <h3>Add New Intervention</h3>
+                    <form action="/mtss/createint" method="POST" class="newintform">
+                        <label for="studentid">Student ID</label>			
+                        <input type="text" name="studentid">
+                        
+                        <label for="concern">Area of Concern</label>			
+                        <select name="concern">
+                            <option>Select</option>
+                            {% for concern in concerns %}
+                                <option value="{{concern.id}}">{{concern.concern_name}}</option>
+                            {% endfor %}        
+                        </select>
+                        <label for="intevention">Intervention</label>
+                        <select name="intervention">
+                            <option>Select</option>
+                            {% for treatment in treatments %}
+                                <option>{{treatment.treatment_name}}</option>
+                            {% endfor %}                    
+                        </select>
+                        <label for="start">Intervention Start Date</label>
+                        <input type="date" name="start" value="{{date}}">
+                        <label for="checkin">Intervention Check-In Date</label>
+                        <input type='date' name='checkin' value="{{checkin}}">
+                        <label for="notes">Notes</label>
+                        <textarea name="comment" id="comment" cols="30" rows="5"></textarea>
+                        <label for="SST Member">Monitored by</label>
+                        <select name="sstmember">
+                            <option>Select</option>
+                            {% for member in members %}
+                                <option>{{member.teacher.LASTFIRST}}</option>
+                            {% endfor %}                    
+                        </select>
+                        <input type="submit" class="button" name="submit" value="Add">
+                        <input type="submit" class="button" name="submit" value = "Cancel">
+                    </form>		
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+    <!-- <script>
+        $(document).ready(function() {
+        $("form").submit(function() {
+            var $form = $(this);
+            // submit form
+            $.post($form.attr('action'), $form.serializeArray());
+            // alert
+            alert("The request has been submitted.");
+            // close window
+            window.close();
+            // return
+            return false;
+        });
+        });
+
+    </script> -->
+</html>

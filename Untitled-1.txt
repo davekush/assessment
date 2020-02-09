@@ -1,0 +1,93 @@
+Steps to Add New Pages and Functions
+	Write the functions, adjust models
+	Write the HTML
+	Write the route
+	Test
+
+
+
+----------------------------
+MTSS CREATE TABLE Statements
+
+
+CREATE Table SSTmembers (
+	id int NOT NULL PRIMARY KEY IDENTITY,
+	tchnum int NOT NULL UNIQUE,
+	status int NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	);
+
+CREATE Table treatments (
+	id int NOT NULL PRIMARY KEY IDENTITY,
+	treatment_name varchar(100) NOT NULL UNIQUE,
+	status int NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified_at DATETIME,
+	treatment_type varchar(255),
+	need varchar (200),
+	standard_duration int,
+	rti_tier int,
+	);
+
+
+CREATE Table cargivers (
+	id int NOT NULL PRIMARY KEY IDENTITY,
+	tchnum int,
+	treat_id int,
+	status int DEFAULT 1,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified_at DATETIME
+	);
+
+insert into db_owner.SSTmembers (tchnum) values (233132);
+insert into db_owner.SSTmembers (tchnum) values (233133);
+insert into db_owner.SSTmembers (tchnum) values (233134);
+
+DROP TABLE mtss_comments;
+
+CREATE TABLE mtss_comments (
+	id int NOT NULL PRIMARY KEY IDENTITY,
+	sstid int NOT NULL,
+	studentid int NOT NULL,
+	intid int,
+	comment varchar(255) NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified_at DATETIME
+)
+
+DROP TABLE mtss_checks;
+
+CREATE TABLE mtss_checks (
+	id int PRIMARY KEY IDENTITY,
+	sstid int NOT NULL,
+	studentid int NOT NULL,
+	intid int,
+	commentid int,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified_at DATETIME
+)
+
+CREATE Table mtss_outcomes (
+	id int NOT NULL PRIMARY KEY IDENTITY,
+	outcome_name varchar(100) NOT NULL UNIQUE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified_at DATETIME,
+	);
+
+
+
+
+Details for This Intervention
+	NAme  
+	Supervisor
+	Caregiver
+	Start DATE  
+	PRevious check and comments
+
+Details for Other Inventions
+	NAme  
+	Supervisor
+	Caregiver
+	Start DATE  
+	PRevious check and comments
