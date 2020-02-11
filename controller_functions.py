@@ -163,8 +163,10 @@ def endint():
     intervention.outcome_id = int(request.form['intervention_outcome'])
     intervention.enddate = func.now()
 
-    comment = MTSScomment(sstid = session['userid'], studentid=intervention.studentid, intid=intervention.id, comment=request.form['comment'])
-    db.session.add(comment)
+
+    if len(request.form['comment']) >0:
+        comment = MTSScomment(sstid = session['userid'], studentid=intervention.studentid, intid=intervention.id, comment=request.form['comment'])
+        db.session.add(comment)
     db.session.commit()
     flash("Intervention Ended")
     return redirect('/mtss/dashboard')
@@ -187,15 +189,20 @@ def checkin():
     if request.form['submit'] == "Cancel":
         return redirect ('/mtss/dashboard')
     intervention = Intervention.query.get(int(request.form['int_id']))
-    comment = MTSScomment(sstid = session['userid'], studentid=intervention.studentid, intid=intervention.id, comment=request.form['comment'])
-    db.session.add(comment)
-    db.session.commit()
-    commentid = comment.id
-    check = MTSSchecks(sstid=session['userid'], studentid=intervention.studentid, intid=intervention.id, commentid=commentid, nextcheck=request.form['nextcheck'])
-    db.session.add(check)
-    db.session.commit()
-    comment.checkid = check.id
-    intervention.checkin = request.form['nextcheck']
+    if len(request.form['comment']) >0:
+        comment = MTSScomment(sstid = session['userid'], studentid=intervention.studentid, intid=intervention.id, comment=request.form['comment'])
+        db.session.add(comment)
+        db.session.commit()
+        commentid = comment.id
+        check = MTSSchecks(sstid=session['userid'], studentid=intervention.studentid, intid=intervention.id, commentid=commentid, nextcheck=request.form['nextcheck'])
+        db.session.add(check)
+        db.session.commit()
+        comment.checkid = check.id
+        
+    else:
+        check = MTSSchecks(sstid=session['userid'], studentid=intervention.studentid, intid=intervention.id, nextcheck=request.form['nextcheck'])
+        db.session.add(check)
+        intervention.checkin = request.form['nextcheck']
     db.session.commit()
     flash('The next check-in date has been updated and your comments have been added')
     return redirect ('/mtss/dashboard')
